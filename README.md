@@ -1,2 +1,467 @@
-# TimeToFlare.github.io
-StudyFinder
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>StudyFinder RF — опрос в 10 шагов</title>
+<style>
+:root{
+  --bg:#0b0f17;--text:#e6f1ff;--muted:#9bb0ca;--primary:#38bdf8;--accent:#a78bfa;--radius:14px;
+  --border:rgba(148,163,184,.22);--panel:rgba(255,255,255,.03);--glow:0 0 18px rgba(56,189,248,.35),0 0 28px rgba(167,139,250,.22);
+}
+*{box-sizing:border-box} html,body{height:100%}
+body{
+  margin:0;background:
+    radial-gradient(1200px 700px at 15% -10%, rgba(56,189,248,.08), transparent 60%),
+    radial-gradient(900px 600px at 120% 20%, rgba(167,139,250,.08), transparent 60%),
+    var(--bg);
+  color:var(--text);font:16px/1.5 Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;overflow-x:hidden;
+}
+a{color:var(--primary);text-decoration:none} a:hover{text-decoration:underline}
+
+.wrap{max-width:1060px;margin:0 auto;padding:28px 18px 80px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 18px}
+.logo{display:flex;align-items:center;gap:12px}
+.badge{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(56,189,248,.2),rgba(167,139,250,.2));
+  display:grid;place-items:center;font-weight:800;box-shadow:0 0 12px rgba(56,189,248,.2)}
+.title{font-weight:800;font-size:20px}
+.subtitle{color:var(--muted);font-size:13px}
+.controls{display:flex;gap:10px;flex-wrap:wrap}
+.btn{background:linear-gradient(180deg,rgba(56,189,248,.25),rgba(56,189,248,.1));border:1px solid rgba(56,189,248,.5);
+  color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;transition:.25s;font-weight:600}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--glow)}
+.btn.ghost{background:transparent;border-color:var(--border)}
+.btn.small{padding:8px 12px;font-size:14px}
+
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:18px 18px 14px;margin:12px 0;backdrop-filter:blur(6px);
+  box-shadow:0 25px 50px rgba(2,8,23,.32)}
+.q-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.q-title{font-weight:800;font-size:18px}
+.q-hint{color:var(--muted);font-size:13px}
+
+.progress{height:6px;border-radius:999px;background:rgba(148,163,184,.18);overflow:hidden;margin:10px 0 2px}
+.progress>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .35s ease}
+
+.step{display:none;animation:fadeIn .35s ease}
+.step.active{display:block}
+@keyframes fadeIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+.row{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+@media(min-width:760px){.row{grid-template-columns:repeat(2,1fr)}}
+
+label{display:block;font-weight:600;margin:6px 0 6px}
+.field,select,input[type="text"]{
+  width:100%;background:rgba(17,24,39,.84);border:1px solid rgba(56,189,248,.3);border-radius:12px;color:var(--text);
+  padding:12px 14px;outline:none;transition:.25s;box-shadow:inset 0 0 10px rgba(56,189,248,.05)
+}
+.field:focus,select:focus,input[type="text"]:focus{border-color:var(--primary);box-shadow:var(--glow)}
+input::placeholder{color:var(--muted);opacity:.7}
+
+.choice{display:flex;flex-wrap:wrap;gap:10px}
+.chip{
+  background:#101827;border:1px solid rgba(148,163,184,.3);padding:9px 14px;border-radius:999px;cursor:pointer;transition:.2s;
+  display:inline-flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-hyphens:none;hyphens:none;word-break:keep-all;max-width:100%
+}
+.chip:hover{border-color:rgba(56,189,248,.7)}
+.chip.active{background:linear-gradient(180deg,rgba(56,189,248,.25),rgba(56,189,248,.1));border-color:rgba(56,189,248,.7)}
+.nav{margin-top:14px;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+
+.results{display:none;animation:fadeIn .35s ease}
+.grid{display:grid;gap:14px}
+@media(min-width:900px){.grid{grid-template-columns:1.1fr .9fr}}
+
+.uni .item{padding:12px;border:1px solid rgba(148,163,184,.16);border-radius:14px;background:#0b1322;margin-bottom:10px}
+.item h4{margin:0 0 6px;font-size:16px}
+.tag{display:inline-block;padding:4px 8px;border:1px solid rgba(56,189,248,.45);color:var(--primary);border-radius:999px;font-size:12px;margin-left:8px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-size:12px;background:#0f1729;border:1px solid rgba(148,163,184,.2);color:var(--muted);
+  white-space:nowrap;-webkit-hyphens:none;hyphens:none;word-break:keep-all}
+
+table{width:100%;border-collapse:collapse;background:#0b1322;border-radius:14px;overflow:hidden;border:1px solid rgba(148,163,184,.18)}
+th,td{padding:12px 10px;border-bottom:1px solid rgba(148,163,184,.14);text-align:left;font-size:14px}
+th{background:#0f1a2b;position:sticky;top:0}
+tr:hover td{background:#0f1626}
+.badge-inline{padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid rgba(148,163,184,.26);
+  white-space:nowrap;-webkit-hyphens:none;hyphens:none;word-break:keep-all}
+.b-ok{border-color:rgba(52,211,153,.5);color:#7ce3b5}
+.b-warn{border-color:rgba(245,158,11,.5);color:#f9c766}
+.b-risk{border-color:rgba(251,113,133,.5);color:#ff9fb0}
+.muted{color:var(--muted);font-size:13px}
+.sep{height:1px;background:linear-gradient(90deg,rgba(56,189,248,0),rgba(56,189,248,.25),rgba(167,139,250,0));margin:12px 0}
+.footer{margin:18px auto 0;text-align:center;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">
+      <div class="badge">SF</div>
+      <div>
+        <div class="title">StudyFinder RF</div>
+        <div class="subtitle">Квиз подбора Российских ВУЗов</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn ghost small" id="btnReset">Сбросить</button>
+      <button class="btn small" id="btnJumpResults">К результатам</button>
+    </div>
+  </header>
+
+  <div class="card" id="progressCard">
+    <div class="q-head">
+      <div class="q-title">Опрос — 10 шагов</div>
+      <div class="q-hint"><span id="progNow">1</span>/10</div>
+    </div>
+    <div class="progress"><span id="bar" style="width:10%"></span></div>
+    <div class="sep"></div>
+
+    <div id="steps">
+      <!-- 1 -->
+      <section class="step active" data-step="1">
+        <div class="q-head"><div class="q-title">В каком городе России вы хотите учиться?</div><div class="q-hint">Выберите из списка или введите свой</div></div>
+        <div class="row">
+          <div>
+            <label for="city">Город</label>
+            <input id="city" class="field" list="cities" placeholder="Напр. Казань" autocomplete="off">
+            <datalist id="cities"></datalist>
+          </div>
+          <div>
+            <label for="campus">Важен ли большой кампус?</label>
+            <select id="campus" class="field">
+              <option value="неважно">Не принципиально</option>
+              <option>Да, большой кампус</option>
+              <option>Небольшой, уютный</option>
+            </select>
+          </div>
+        </div>
+        <div class="nav"><button class="btn" data-next>Дальше</button></div>
+      </section>
+
+      <!-- 2 -->
+      <section class="step" data-step="2">
+        <div class="q-head"><div class="q-title">Выберите направление обучения</div><div class="q-hint">От этого зависят рекомендуемые вузы</div></div>
+        <div class="choice" id="dirChips"></div>
+        <div class="nav"><button class="btn ghost" data-prev>Назад</button><button class="btn" data-next>Дальше</button></div>
+      </section>
+
+      <!-- 3 -->
+      <section class="step" data-step="3">
+        <div class="q-head"><div class="q-title">Формат обучения</div><div class="q-hint">Очный / Заочный / Онлайн</div></div>
+        <div class="choice" id="formatChips"></div>
+        <div class="nav"><button class="btn ghost" data-prev>Назад</button><button class="btn" data-next>Дальше</button></div>
+      </section>
+
+      <!-- 4 -->
+      <section class="step" data-step="4">
+        <div class="q-head"><div class="q-title">Какой процесс обучения вам ближе?</div><div class="q-hint">Теория, практика или смешанный</div></div>
+        <div class="choice" id="processChips"></div>
+        <div class="nav"><button class="btn ghost" data-prev>Назад</button><button class="btn" data-next>Дальше</button></div>
+      </section>
+
+      <!-- 5 -->
+      <section class="step" data-step="5">
+        <div class="q-head"><div class="q-title">Важна ли стоимость обучения?</div><div class="q-hint">Учтём бюджет/бюджетные места</div></div>
+        <div class="choice" id="costChips"></div>
+        <div class="nav"><button class="btn ghost" data-prev>Назад</button><button class="btn" data-next>Дальше</button></div>
+      </section>
+
+      <!-- 6 -->
+      <section class="step" data-step="6">
+        <div class="q-head"><div class="q-title">Планируете совмещать учёбу с работой?</div><div class="q-hint">Влияет на гибкость расписания</div></div>
+        <div class="choice" id="workChips"></div>
+        <div class="nav"><button class="btn ghost" data-prev>Назад</button><button class="btn" data-next>Дальше</button></div>
+      </section>
+
+      <!-- 7 -->
+      <section class="step" data-step="7">
+        <div class="q-head"><div class="q-title">Нужно ли общежитие?</div><div class="q-hint">Подберём вузы с местами</div></div>
+        <div class="choice" id="dormChips"></div>
+        <div class="nav"><button class="btn ghost" data-prev>Назад</button><button class="btn" data-next>Дальше</button></div>
+      </section>
+
+      <!-- 8 -->
+      <section class="step" data-step="8">
+        <div class="q-head"><div class="q-title">Что важнее — престиж или комфорт?</div><div class="q-hint">Влияние на приоритет рекомендаций</div></div>
+        <div class="choice" id="prioChips"></div>
+        <div class="nav"><button class="btn ghost" data-prev>Назад</button><button class="btn" data-next>Дальше</button></div>
+      </section>
+
+      <!-- 9 -->
+      <section class="step" data-step="9">
+        <div class="q-head"><div class="q-title">Уровень баллов ЕГЭ</div><div class="q-hint">Оценка для корректной выдачи</div></div>
+        <div class="choice" id="examChips"></div>
+        <div class="nav"><button class="btn ghost" data-prev>Назад</button><button class="btn" data-next>Дальше</button></div>
+      </section>
+
+      <!-- 10 -->
+      <section class="step" data-step="10">
+        <div class="q-head"><div class="q-title">Важны ли стажировки и партнёры?</div><div class="q-hint">Отдаём приоритет вузам с индустрией</div></div>
+        <div class="choice" id="internChips"></div>
+        <div class="nav"><button class="btn ghost" data-prev>Назад</button><button class="btn" id="showResults">Показать результаты</button></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="card results" id="resultsCard">
+    <div class="q-head">
+      <div class="q-title">Ваши результаты</div>
+      <div class="q-hint" id="resultMeta"></div>
+    </div>
+    <div class="sep"></div>
+
+    <div class="grid">
+      <div class="uni">
+        <div class="item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <div class="muted">Подбор вузов по <span id="resCityTag" class="badge-inline">городу</span> и <span id="resDirTag" class="badge-inline">направлению</span></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span class="pill" id="countUnis">0 вузов</span>
+            <span class="pill" id="fallbackTag" style="display:none">Добавлены альтернативы по РФ</span>
+          </div>
+        </div>
+        <div id="uniCityGroup"></div>
+        <div id="uniNationalGroup" style="display:none"></div>
+      </div>
+
+      <div class="profs">
+        <div class="item">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <h4 style="margin:0">Сравнение профессий</h4>
+            <div>
+              <label class="muted" for="sortSalary">Сортировка:</label>
+              <select id="sortSalary" class="field" style="padding:8px 10px;width:auto;display:inline-block">
+                <option value="desc">По зарплате (убыв.)</option>
+                <option value="asc">По зарплате (возр.)</option>
+              </select>
+            </div>
+          </div>
+          <div class="sep"></div>
+          <div style="overflow:auto;max-height:520px">
+            <table id="profTable">
+              <thead><tr><th>Профессия</th><th>₽/мес</th><th>₽/год</th><th>Условия</th><th>Конкуренция</th><th>Перспективы</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="muted" style="margin-top:8px">Диапазоны ориентировочные и зависят от региона/опыта.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">StudyFinder RF · Локальная версия (файловый режим)</div>
+  </div>
+</div>
+
+<script>
+const DATA = {
+  cities: ["Москва","Санкт-Петербург","Казань","Екатеринбург","Новосибирск","Нижний Новгород","Самара","Краснодар","Ростов-на-Дону","Пермь","Челябинск","Уфа","Тюмень","Воронеж","Омск","Иркутск","Томск","Калининград","Саратов","Тула","Ярославль","Владивосток","Красноярск","Барнаул","Белгород","Волгоград","Кемерово","Курск","Владимир","Рязань","Тверь","Ижевск","Пенза","Ульяновск","Тамбов","Чебоксары","Оренбург","Липецк","Хабаровск","Курган"],
+  directions: [
+    {id:"it", name:"IT / Программирование"},
+    {id:"tech", name:"Инженерное"},
+    {id:"sci", name:"Естественно-научное"},
+    {id:"hum", name:"Гуманитарное"},
+    {id:"econ", name:"Экономика / Менеджмент"},
+    {id:"art", name:"Творческое / Дизайн"},
+    {id:"med", name:"Медицина / Био"}
+  ],
+  universities: {
+    "Москва": {
+      it: [{n:"МГТУ им. Баумана (ИТ)"},{n:"НИУ ВШЭ (ФКН)"},{n:"МИРЭА"},{n:"МФТИ"}],
+      tech:[{n:"МАИ"},{n:"МИСИС"},{n:"МЭИ"}],
+      sci:[{n:"МГУ (естественные)"},{n:"РХТУ им. Менделеева"}],
+      hum:[{n:"МГУ (гуманитарные)"},{n:"РГГУ"}],
+      econ:[{n:"РЭУ им. Плеханова"},{n:"Финуниверситет"}],
+      art:[{n:"Строгановка"},{n:"БВШД"}],
+      med:[{n:"Сеченовский университет"},{n:"РНИМУ им. Пирогова"}]
+    },
+    "Санкт-Петербург": {
+      it:[{n:"ИТМО"},{n:"СПбГУ (мат/КТ)"},{n:"СПбПУ (Политех)"}],
+      tech:[{n:"Политех СПб"},{n:"ЛЭТИ"}],
+      sci:[{n:"СПбГУ (естественные)"}],
+      hum:[{n:"РГПУ им. Герцена"}],
+      econ:[{n:"СПбГУ (ВШМ)"}],
+      art:[{n:"Академия Штиглица"}],
+      med:[{n:"ПСПбГМУ им. Павлова"},{n:"СЗГМУ им. Мечникова"}]
+    },
+    "Казань": {
+      it:[{n:"КФУ (ИТИС)"},{n:"КАИ"}],
+      tech:[{n:"КГЭУ"}],
+      econ:[{n:"КФУ (эконом)"}]
+    },
+    "Екатеринбург": {
+      it:[{n:"УрФУ (ИТ)"}],
+      tech:[{n:"УрФУ (инженерия)"}],
+      econ:[{n:"УРГЭУ"}]
+    },
+    "Новосибирск": {
+      it:[{n:"НГУ (ИТ)"}],
+      sci:[{n:"НГУ (естественные)"}],
+      med:[{n:"НГМУ"}]
+    }
+  },
+  national: {
+    it:[{n:"ИТМО"},{n:"НИУ ВШЭ"},{n:"МФТИ"},{n:"МГТУ им. Баумана"}],
+    tech:[{n:"МГТУ им. Баумана"},{n:"СПбПУ"},{n:"МАИ"},{n:"МИСИС"}],
+    sci:[{n:"МГУ"},{n:"МФТИ"},{n:"НГУ"},{n:"МИФИ"}],
+    hum:[{n:"МГУ"},{n:"РГГУ"},{n:"СПбГУ"}],
+    econ:[{n:"ВШЭ"},{n:"РЭУ Плеханова"},{n:"Финуниверситет"}],
+    art:[{n:"Строгановка"},{n:"БВШД"},{n:"Штиглица"}],
+    med:[{n:"Сеченовский"},{n:"РНИМУ"},{n:"ПСПбГМУ"}]
+  },
+  professions: {
+    it:[{name:"Frontend-разработчик",month:120000,cond:"удалёнка/гибрид",comp:"средняя",growth:"высокие"},
+        {name:"Backend-разработчик",month:140000,cond:"гибрид/офис",comp:"средняя",growth:"высокие"},
+        {name:"Data Scientist",month:160000,cond:"гибрид",comp:"высокая",growth:"высокие"}],
+    tech:[{name:"Инженер-конструктор",month:110000,cond:"офис",comp:"средняя",growth:"средние"},
+          {name:"Робототехник",month:130000,cond:"офис/лаборатория",comp:"средняя",growth:"высокие"}],
+    sci:[{name:"Исследователь R&D",month:120000,cond:"лаборатория",comp:"высокая",growth:"средние"}],
+    hum:[{name:"Маркетолог/PR",month:90000,cond:"гибрид/офис",comp:"высокая",growth:"средние"}],
+    econ:[{name:"Финансовый аналитик",month:130000,cond:"офис/гибрид",comp:"высокая",growth:"высокие"}],
+    art:[{name:"UX/UI дизайнер",month:120000,cond:"удалёнка/гибрид",comp:"средняя",growth:"высокие"}],
+    med:[{name:"Врач-терапевт",month:95000,cond:"смены/офис",comp:"средняя",growth:"средние"}]
+  }
+};
+
+/* chips helpers */
+function makeChipGroup(el, options){
+  el.innerHTML="";
+  options.forEach(opt=>{
+    const d=document.createElement('div'); d.className="chip"; d.textContent=opt;
+    d.tabIndex=0;
+    const setActive=()=>{[...el.children].forEach(c=>c.classList.remove('active')); d.classList.add('active')};
+    d.addEventListener('click', setActive);
+    d.addEventListener('keypress', e=>{if(e.key==='Enter') setActive()});
+    el.appendChild(d);
+  });
+  return { value:()=> (el.querySelector('.chip.active')?.textContent || null), set:(label)=>{[...el.children].forEach(c=>c.classList.toggle('active', c.textContent===label));} };
+}
+
+/* datalist */
+const dl = document.getElementById('cities'); DATA.cities.forEach(c=>{const o=document.createElement('option'); o.value=c; dl.appendChild(o)});
+
+/* groups */
+const dirChips     = makeChipGroup(document.getElementById('dirChips'), DATA.directions.map(d=>d.name));
+const formatChips  = makeChipGroup(document.getElementById('formatChips'), ["Очный","Заочный","Онлайн"]);
+const processChips = makeChipGroup(document.getElementById('processChips'), ["Больше теории","Больше практики","Смешанный"]);
+const costChips    = makeChipGroup(document.getElementById('costChips'), ["Не важно","Средняя","Низкая стоимость"]);
+const workChips    = makeChipGroup(document.getElementById('workChips'), ["Да, планирую","Нет"]);
+const dormChips    = makeChipGroup(document.getElementById('dormChips'), ["Да, нужно","Не важно"]);
+const prioChips    = makeChipGroup(document.getElementById('prioChips'), ["Престиж","Баланс","Комфорт"]);
+const examChips    = makeChipGroup(document.getElementById('examChips'), ["Высокие","Средние","Ниже среднего"]);
+const internChips  = makeChipGroup(document.getElementById('internChips'), ["Да, важны","Не принципиально"]);
+
+/* stepper */
+let step=1; const stepsEl=document.getElementById('steps'); const bar=document.getElementById('bar');
+function setStep(n){ step=Math.max(1,Math.min(10,n)); document.getElementById('progNow').textContent=step;
+  [...stepsEl.querySelectorAll('.step')].forEach(s=>s.classList.toggle('active', s.dataset.step==step));
+  bar.style.width = (step*10)+'%';
+}
+stepsEl.addEventListener('click',e=>{
+  if(e.target.matches('[data-next]')) setStep(step+1);
+  if(e.target.matches('[data-prev]')) setStep(step-1);
+});
+document.getElementById('btnJumpResults').addEventListener('click',()=> setStep(10));
+
+document.getElementById('btnReset').addEventListener('click',()=>{
+  document.getElementById('city').value="";
+  ["campus"].forEach(id=> document.getElementById(id).selectedIndex=0);
+  [dirChips,formatChips,processChips,costChips,workChips,dormChips,prioChips,examChips,internChips].forEach(g=>g.set(null));
+  document.getElementById('resultsCard').style.display='none';
+  document.getElementById('progressCard').style.display='block';
+  setStep(1);
+});
+
+/* results rendering */
+const fmtRub=v=>v.toLocaleString('ru-RU');
+function pickUniversitiesStrict(city, dirId){
+  const perCity = DATA.universities[city]?.[dirId] || [];
+  const nat = DATA.national[dirId] || [];
+  return { cityList: perCity.slice(0,20), nationalList: perCity.length<5 ? nat : [] };
+}
+function renderProfessions(dirId){
+  const tbody=document.querySelector('#profTable tbody');
+  const sortSel=document.getElementById('sortSalary');
+  const profs=(DATA.professions[dirId]||[]).map(p=>({...p, year:p.month*12 }));
+  const draw=()=>{
+    const arr=[...profs].sort((a,b)=> sortSel.value==='desc' ? b.month-a.month : a.month-b.month);
+    tbody.innerHTML = arr.map(p=>{
+      const compBadge=p.comp==="низкая"?"b-ok":p.comp==="средняя"?"b-warn":"b-risk";
+      const growthBadge=p.growth==="высокие"?"b-ok":p.growth==="средние"?"b-warn":"b-risk";
+      return `<tr>
+        <td>${p.name}</td><td><strong>${fmtRub(p.month)}</strong></td><td>${fmtRub(p.year)}</td>
+        <td><span class="badge-inline">${p.cond}</span></td>
+        <td><span class="badge-inline ${compBadge}">${p.comp}</span></td>
+        <td><span class="badge-inline ${growthBadge}">${p.growth}</span></td>
+      </tr>`;
+    }).join('');
+  };
+  sortSel.onchange=draw; draw();
+}
+
+function fillResults({city, dirId, dirName}){
+  const {cityList, nationalList}=pickUniversitiesStrict(city,dirId);
+  const cityWrap=document.getElementById('uniCityGroup');
+  const natWrap=document.getElementById('uniNationalGroup');
+  cityWrap.innerHTML=""; natWrap.innerHTML="";
+
+  if(cityList.length){
+    const head=document.createElement('div'); head.className='item';
+    head.innerHTML=`<h4 style="margin:0">Вузы в городе «${city}» <span class="tag">${dirName}</span></h4>`;
+    cityWrap.appendChild(head);
+    cityList.forEach((v,i)=>{
+      const d=document.createElement('div'); d.className='item';
+      d.innerHTML=`<h4>${i+1}. ${v.n} <span class="tag">${dirName}</span></h4>`;
+      cityWrap.appendChild(d);
+    });
+  }else{
+    cityWrap.innerHTML = `<div class="item"><div class="muted">Пока нет записей по городу «${city}». Добавьте их в DATA.universities.</div></div>`;
+  }
+
+  if(nationalList.length){
+    document.getElementById('fallbackTag').style.display='inline-flex';
+    natWrap.style.display='block';
+    const head=document.createElement('div'); head.className='item';
+    head.innerHTML=`<h4 style="margin:0">Альтернативы по РФ <span class="tag">${dirName}</span></h4>`;
+    natWrap.appendChild(head);
+    nationalList.slice(0,10).forEach((v,i)=>{
+      const d=document.createElement('div'); d.className='item';
+      d.innerHTML=`<h4>${i+1}. ${v.n} <span class="tag">${dirName}</span></h4>`;
+      natWrap.appendChild(d);
+    });
+  }else{
+    document.getElementById('fallbackTag').style.display='none';
+    natWrap.style.display='none';
+  }
+
+  document.getElementById('countUnis').textContent=`${cityList.length} вуз(ов)`;
+  document.getElementById('resultMeta').textContent=`Город: ${city} · Направление: ${dirName}`;
+  renderProfessions(dirId);
+}
+
+/* submit */
+document.getElementById('showResults').addEventListener('click', ()=>{
+  const city=(document.getElementById('city').value||"").trim();
+  const dirName=dirChips.value();
+  if(!city||!dirName){ alert("Пожалуйста, укажите город и направление."); return; }
+  const dirId=DATA.directions.find(d=>d.name===dirName)?.id;
+  document.getElementById('progressCard').style.display='none';
+  document.getElementById('resultsCard').style.display='block';
+  document.getElementById('resCityTag').textContent=city;
+  document.getElementById('resDirTag').textContent=dirName;
+  fillResults({city,dirId,dirName});
+});
+
+/* defaults */
+dirChips.set("IT / Программирование");
+formatChips.set("Очный");
+processChips.set("Смешанный");
+costChips.set("Средняя");
+workChips.set("Да, планирую");
+dormChips.set("Не важно");
+prioChips.set("Баланс");
+examChips.set("Средние");
+internChips.set("Да, важны");
+
+/* accessibility: Enter on input to next */
+document.getElementById('city').addEventListener('keypress',e=>{if(e.key==='Enter') setStep(2)});
+
+/* step init */
+setStep(1);
+</script>
+</body>
+</html>
